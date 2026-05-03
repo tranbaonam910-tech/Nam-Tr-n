@@ -10,10 +10,10 @@ export const getStudentDashboardData = async (userId: string) => {
   
   if (!userStatsSnap.exists()) {
     return {
-      stats: { streak: 0, currentCourses: 0, averageScore: 0, pendingAssignments: 0, rank: 0 },
-      results: [],
-      assignments: [],
-      achievements: []
+      stats: mockStudentStats,
+      results: mockRecentResults,
+      assignments: mockUpcomingAssignments,
+      achievements: mockAchievements
     };
   }
 
@@ -26,9 +26,9 @@ export const getTeacherDashboardData = async (userId: string) => {
   
   if (!userStatsSnap.exists()) {
     return {
-      stats: { totalStudents: 0, activeClasses: 0, averageScore: 0, assignmentCompletion: 0 },
-      classes: [],
-      activities: []
+      stats: mockTeacherStats,
+      classes: mockClassProgress,
+      activities: mockRecentActivities
     };
   }
 
@@ -39,7 +39,7 @@ export const getQuizData = async () => {
   const quizRef = collection(db, 'quizzes');
   const quizSnap = await getDocs(quizRef);
   if (quizSnap.empty) {
-    return [];
+    return mockQuizData;
   }
   return quizSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })) as any[];
 };
@@ -48,7 +48,8 @@ export const getLessonData = async (lessonId: string) => {
   const lessonRef = doc(db, 'lessons', lessonId);
   const lessonSnap = await getDoc(lessonRef);
   if (!lessonSnap.exists()) {
-     return null;
+    // Return default for demo purposes
+     return mockLessons[0];
   }
   return lessonSnap.data();
 };
