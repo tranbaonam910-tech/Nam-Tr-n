@@ -4,7 +4,17 @@ import { Bot, Send, Sparkles, Wand2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+let aiClient: GoogleGenAI | null = null;
+
+const getAIClient = () => {
+  if (!aiClient) {
+    if (!process.env.GEMINI_API_KEY) {
+      throw new Error("Missing GEMINI_API_KEY environment variable. Please configure it in your deployment settings.");
+    }
+    aiClient = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  }
+  return aiClient;
+};
 
 export default function AIAssistant() {
   const { role } = useAuth();
@@ -40,7 +50,7 @@ export default function AIAssistant() {
           : "Bạn là một gia sư AI dành cho một học sinh đang học Hóa học. Hãy giữ câu trả lời của bạn mang tính hướng dẫn, khích lệ và rõ ràng. Hãy trả lời bằng tiếng Việt.";
 
        // Use Chat session for context
-       const chat = ai.chats.create({
+       const chat = getAIClient().chats.create({
           model: "gemini-3.1-pro-preview",
           config: {
              systemInstruction: systemInstruction,
